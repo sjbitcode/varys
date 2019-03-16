@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:11.2-alpine
+    networks:
+      - varys-project
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  
+  varys:
+    container_name: varys
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    networks:
+      - varys-project
+
+networks:
+  varys-project:
+
+volumes:
+  pgdata:
+
