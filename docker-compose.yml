@@ -4,6 +4,8 @@ services:
   postgres:
     container_name: postgres
     image: postgres:11.2-alpine
+    ports:
+      - "5432:5432"
     networks:
       - varys-project
     volumes:
