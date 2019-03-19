@@ -12,8 +12,26 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
-def env(key, default=None):
-    return os.environ.get(key, default)
+def env(key, default=None, to_type=None):
+    """
+    Get environment variable and optionally cast to given type.
+
+    Args:
+        key (str):          The environment variable name
+        default (any):      The value returned if environment variable not found.
+        to_type (callable): The type that environment variable should be casted to.
+    
+    Returns:
+        value (any):        The value of environment variable after optional type casting.
+    """
+    value = os.environ.get(key, default)
+    if callable(to_type):
+        if to_type == bool:
+            value = value.lower() in ['true']
+        else:
+            value = to_type(value)
+    return value
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +44,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG') 
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = []
 
@@ -83,8 +101,8 @@ DATABASES = {
         'NAME': env('POSTGRES_DB'),
         'USER': env('POSTGRES_USER'),
         'PASSWORD': env('POSTGRES_PASSWORD'),
-        'HOST': env('POSTGRES_HOST'),
-        'PORT': int(env('POSTGRES_PORT', '5432'))
+        'HOST': env('POSTGRES_HOST'),   
+        'PORT': env('POSTGRES_PORT', '5432', int)
     }
 }
 
