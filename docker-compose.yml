@@ -4,6 +4,8 @@ services:
   postgres:
     container_name: postgres
     image: postgres:11.2-alpine
+    env_file:
+      - ./backend/env/dev.env
     ports:
       - "5432:5432"
     networks:
@@ -14,12 +16,16 @@ services:
   varys:
     container_name: varys
     build: ./backend
+    env_file:
+      - ./backend/env/dev.env
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
     networks:
       - varys-project
+    depends_on:
+      - postgres
 
 networks:
   varys-project:

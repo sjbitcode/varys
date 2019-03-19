@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 
@@ -39,6 +40,7 @@ class Tweet(models.Model):
         verbose_name='Tweet author'
     )
     created_at = models.DateTimeField(verbose_name='Tweet creation datetime')
+    source = JSONField(default=dict)
 
     def __str__(self):
         return self.text[:50]
