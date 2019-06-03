@@ -12,6 +12,27 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
+def env(key, default=None, to_type=None):
+    """
+    Get environment variable and optionally cast to given type.
+
+    Args:
+        key (str):          The environment variable name
+        default (any):      The value returned if environment variable not found.
+        to_type (callable): The type that environment variable should be casted to.
+    
+    Returns:
+        value (any):        The value of environment variable after optional type casting.
+    """
+    value = os.environ.get(key, default)
+    if callable(to_type):
+        if to_type == bool:
+            value = value.lower() in ['true']
+        else:
+            value = to_type(value)
+    return value
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,10 +41,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '$(-9!gi*uu6!-gogkz&=au=joj(wqjcb7ic!hatl-6t&jdstvy'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = []
 
@@ -37,6 +58,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'content',
+    'analysis'
 ]
 
 MIDDLEWARE = [
@@ -75,8 +98,12 @@ WSGI_APPLICATION = 'varys.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('POSTGRES_DB'),
+        'USER': env('POSTGRES_USER'),
+        'PASSWORD': env('POSTGRES_PASSWORD'),
+        'HOST': env('POSTGRES_HOST'),   
+        'PORT': env('POSTGRES_PORT', '5432', int)
     }
 }
 
@@ -105,7 +132,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = env('TIME_ZONE')
 
 USE_I18N = True
 
